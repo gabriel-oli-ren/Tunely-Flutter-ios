@@ -171,6 +171,3 @@ lib/generated_plugin_registrant.dart
 
 # Test coverage
 coverage/
-
-# Codemagic
-codemagic.yaml
