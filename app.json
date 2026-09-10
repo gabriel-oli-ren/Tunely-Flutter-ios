@@ -1,0 +1,77 @@
+{
+  "expo": {
+    "name": "Tunely",
+    "slug": "tunely",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tunely.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "UIStatusBarStyle": "UIStatusBarStyleLightContent",
+        "UIViewControllerBasedStatusBarAppearance": true,
+        "UIRequiresFullScreen": true,
+        "UIPrerenderedIcon": true,
+        "UIBackgroundModes": [
+          "audio"
+        ],
+        "NSBluetoothAlwaysUsageDescription": "This app uses Bluetooth for audio connectivity",
+        "NSBluetoothPeripheralUsageDescription": "This app uses Bluetooth for audio connectivity"
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "capabilities": [
+        "ios-background-modes"
+      ],
+      "backgroundColor": "#000000",
+      "userInterfaceStyle": "dark"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.tunely.app",
+      "versionCode": 1
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-av",
+      "expo-haptics",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "PORTRAIT"
+        }
+      ],
+      [
+        "expo-background-fetch",
+        {
+          "enableBackgroundTasks": true
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id-here"
+      }
+    }
+  }
+}
