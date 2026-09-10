@@ -38,18 +38,6 @@ workflows:
           export PATH="$PATH:$CM_BUILD_DIR/flutter/bin"
           flutter pub get
           
-      - name: Install iOS pods
-        script: |
-          cd $CM_BUILD_DIR/ios
-          export PATH="$PATH:$CM_BUILD_DIR/flutter/bin"
-          pod install
-          
-      - name: Build iOS (Debug)
-        script: |
-          cd $CM_BUILD_DIR
-          export PATH="$PATH:$CM_BUILD_DIR/flutter/bin"
-          flutter build ios --debug --no-codesign
-          
       - name: Build iOS (Release)
         script: |
           cd $CM_BUILD_DIR
