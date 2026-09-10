@@ -1,19 +1,13 @@
-name: iOS Ad-Hoc Build (Flutter with Code Signing)
+name: iOS Build (Unsigned - Free Method)
 
 on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
-    inputs:
-      flutter_version:
-        description: 'Flutter version'
-        required: false
-        default: '3.16.0'
-        type: string
 
 jobs:
   build-ios:
-    name: Build iOS IPA (Ad-Hoc)
+    name: Build iOS IPA (Unsigned)
     runs-on: macos-latest
 
     steps:
@@ -25,68 +19,38 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
-          flutter-version: ${{ inputs.flutter_version }}
           cache: true
-
-      - name: Decode and install Apple certificates
-        env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.APP_STORE_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.APP_STORE_CERTIFICATE_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.APP_STORE_PROVISION_PROFILE_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          # Define temporary paths on macOS runner
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          PP_PATH=$RUNNER_TEMP/build_profile.mobileprovision
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-
-          # Decode Base64-encoded certificate and provisioning profile back to binary files
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
-
-          # Create temporary secure keychain for code signing
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # Import Apple developer certificate into the keychain
-          security import $CERTIFICATE_PATH -k $KEYCHAIN_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12
-          security list-keychains -d user -s $KEYCHAIN_PATH
-
-          # Copy provisioning profile to the official directory required by Xcode
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Build iOS IPA (Ad-Hoc export)
+      - name: Build iOS IPA (Unsigned)
         run: |
-          # Build IPA with Ad-Hoc export method for testing on registered devices
-          flutter build ipa --release --export-method=ad-hoc
+          # Build IPA without code signing for AltStore/Sideloadly
+          flutter build ipa --release --no-codesign
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tunely-ios-adhoc
+          name: tunely-ios-unsigned
           path: build/ios/ipa/*.ipa
           retention-days: 30
 
       - name: Create build summary
         if: success()
         run: |
-          echo "## 🎉 iOS Ad-Hoc Build Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎉 iOS Build Successful!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Build Details" >> $GITHUB_STEP_SUMMARY
           echo "- **Platform**: iOS" >> $GITHUB_STEP_SUMMARY
-          echo "- **Export Method**: Ad-Hoc" >> $GITHUB_STEP_SUMMARY
-          echo "- **Flutter Version**: ${{ inputs.flutter_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Signing**: Unsigned (Free method)" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Installation" >> $GITHUB_STEP_SUMMARY
-          echo "1. Download the IPA from the Artifacts section" >> $GITHUB_STEP_SUMMARY
-          echo "2. Install on your registered iPhone using:" >> $GITHUB_STEP_SUMMARY
-          echo "   - AltStore (recommended)" >> $GITHUB_STEP_SUMMARY
-          echo "   - Apple Configurator" >> $GITHUB_STEP_SUMMARY
-          echo "   - iOS Device installation" >> $GITHUB_STEP_SUMMARY
+          echo "### Installation with AltStore" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download AltStore from https://altstore.io" >> $GITHUB_STEP_SUMMARY
+          echo "2. Install AltStore on your iPhone" >> $GITHUB_STEP_SUMMARY
+          echo "3. Download the IPA from Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "4. Open AltStore on your computer" >> $GITHUB_STEP_SUMMARY
+          echo "5. Click '+' and select the IPA file" >> $GITHUB_STEP_SUMMARY
+          echo "6. Enter your personal Apple ID (g337abriel@gmail.com)" >> $GITHUB_STEP_SUMMARY
+          echo "7. Install on your iPhone" >> $GITHUB_STEP_SUMMARY
